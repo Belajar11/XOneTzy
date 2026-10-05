@@ -76,4 +76,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Gagal menghubungi layanan AI video. Periksa deployment Vercel dan coba lagi.' });
   }
 }
-
