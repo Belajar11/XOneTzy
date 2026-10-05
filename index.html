@@ -2831,7 +2831,7 @@
 </style>
 
 <style id="sx-ai-image-css">
-#sxAIImageBtn{position:fixed;right:18px;bottom:88px;z-index:9998;border:1px solid rgba(180,255,0,.55);background:linear-gradient(135deg,#101b00,#263d00);color:#d8ff42;border-radius:50%;width:54px;height:54px;font-size:22px;box-shadow:0 0 22px rgba(180,255,0,.22);cursor:pointer}
+#sxAIImageBtn{position:fixed;right:18px;bottom:150px;z-index:9998;border:1px solid rgba(180,255,0,.55);background:linear-gradient(135deg,#101b00,#263d00);color:#d8ff42;border-radius:50%;width:54px;height:54px;font-size:22px;box-shadow:0 0 22px rgba(180,255,0,.22);cursor:pointer}
 #sxAIImageOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);z-index:99999;padding:18px;overflow:auto}
 #sxAIImageModal{max-width:920px;margin:25px auto;background:linear-gradient(145deg,#0d1208,#111817);border:1px solid rgba(200,255,50,.35);border-radius:22px;color:#f3f7e8;box-shadow:0 25px 80px rgba(0,0,0,.65);overflow:hidden}
 .sx-ai-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -2841,7 +2841,7 @@
 #sxAIPrompt{min-height:92px;resize:vertical}.sx-ai-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.sx-ai-btn{border:0;border-radius:11px;padding:11px 15px;font-weight:700;cursor:pointer}.sx-ai-generate{background:#d7ff35;color:#111}.sx-ai-secondary{background:#222b20;color:#eaffb0;border:1px solid rgba(220,255,80,.18)}
 #sxAIStatus{font-size:12px;min-height:20px;margin:12px 0;opacity:.8}.sx-ai-result{display:none;background:#070a07;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:10px;margin-top:12px}.sx-ai-result img{display:block;width:100%;max-height:650px;object-fit:contain;border-radius:12px;background:#000}.sx-ai-result-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 #sxAIHistory{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.sx-ai-history-card{background:#0a0e09;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:7px;cursor:pointer}.sx-ai-history-card img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px}.sx-ai-history-card div{font-size:10px;opacity:.7;padding:5px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:600px){#sxAIImageOverlay{padding:8px}#sxAIImageModal{margin:5px auto;border-radius:16px}.sx-ai-body{padding:12px}#sxAIImageBtn{right:12px;bottom:80px}}
+@media(max-width:600px){#sxAIImageOverlay{padding:8px}#sxAIImageModal{margin:5px auto;border-radius:16px}.sx-ai-body{padding:12px}#sxAIImageBtn{right:12px;bottom:145px}}
 </style>
 </head>
 <body>
@@ -8510,11 +8510,11 @@ platformTabs.forEach(tab => {
  function close(){overlay.style.display='none';overlay.setAttribute('aria-hidden','true')}
  function setStatus(t){status.textContent=t}
  function dims(r){return r==='16:9'?[1536,864]:r==='9:16'?[864,1536]:r==='4:3'?[1344,1008]:[1024,1024]}
- function makeUrl(){let p=prompt.value.trim();if(!p)throw Error('Prompt masih kosong.');p=p+', '+styles[style.value];let [w,h]=dims(ratio.value);let u='https://gen.pollinations.ai/image/'+encodeURIComponent(p)+'?model='+encodeURIComponent(model.value)+'&width='+w+'&height='+h+'&nologo=true&safe=true';return u}
+ function makePayload(){let p=prompt.value.trim();if(!p)throw Error('Prompt masih kosong.');p=p+', '+styles[style.value];let [w,h]=dims(ratio.value);return {prompt:p,model:model.value,width:w,height:h};}
  function save(u,p){let a=[];try{a=JSON.parse(localStorage.getItem(KEY)||'[]')}catch{};a.unshift({url:u,prompt:p.slice(0,300),time:Date.now()});a=a.slice(0,12);localStorage.setItem(KEY,JSON.stringify(a));renderHistory()}
  function renderHistory(){let a=[];try{a=JSON.parse(localStorage.getItem(KEY)||'[]')}catch{};historyEl.innerHTML=a.length?a.map((x,i)=>'<div class="sx-ai-history-card" data-i="'+i+'"><img src="'+x.url+'" loading="lazy"><div>'+esc(x.prompt)+'</div></div>').join(''):'<div style="opacity:.55;font-size:12px">Belum ada gambar.</div>';historyEl.querySelectorAll('.sx-ai-history-card').forEach(c=>c.onclick=()=>{let a=JSON.parse(localStorage.getItem(KEY)||'[]');let x=a[+c.dataset.i];if(x){lastUrl=x.url;img.src=x.url;dl.href=x.url;result.style.display='block';prompt.value=x.prompt;setStatus('Riwayat gambar dibuka.')}})}
  function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
- async function generate(){try{let u=makeUrl(), p=prompt.value.trim();lastUrl=u;result.style.display='block';img.src='';setStatus('⏳ Membuat gambar AI... tunggu beberapa detik.');dl.href=u;img.onload=()=>setStatus('✅ Gambar berhasil dibuat.');img.onerror=()=>setStatus('❌ Gagal memuat gambar. Coba generate lagi atau pilih model lain.');img.src=u;save(u,p)}catch(e){setStatus('⚠️ '+e.message)}}
+ async function generate(){try{let payload=makePayload(),p=prompt.value.trim();result.style.display='block';img.removeAttribute('src');dl.removeAttribute('href');setStatus('⏳ Membuat gambar AI... tunggu beberapa detik.');const r=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const ct=r.headers.get('content-type')||'';if(!r.ok){let msg='HTTP '+r.status;try{const j=await r.json();msg=j.error||msg}catch{};throw Error(msg)}let blob=await r.blob();if(!blob.type.startsWith('image/'))throw Error('Server tidak mengembalikan gambar.');let u=URL.createObjectURL(blob);lastUrl=u;img.src=u;dl.href=u;dl.download='xonetzy-ai-'+Date.now()+'.png';img.onload=()=>setStatus('✅ Gambar berhasil dibuat.');save(u,p)}catch(e){setStatus('❌ '+e.message)}}
  $('sxAIImageBtn').onclick=open;$('sxAIClose').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});$('sxAIGenerate').onclick=generate;$('sxAIRegenerate').onclick=generate;$('sxAIRandom').onclick=()=>{prompt.value=samples[Math.floor(Math.random()*samples.length)];style.value=['realistic','anime','cyberpunk','xonetzy'][Math.floor(Math.random()*4)]};$('sxAIClearHistory').onclick=()=>{localStorage.removeItem(KEY);renderHistory();setStatus('Riwayat dihapus.')};
  prompt.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')generate()});
  window.SXAIImage={open,close,generate,setPrompt:v=>prompt.value=v,history:renderHistory};
