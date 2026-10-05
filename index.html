@@ -2829,6 +2829,20 @@
 .sx-v2-cover-fallback{display:flex;align-items:center;justify-content:center;font-size:24px;color:#FFD700}
 
 </style>
+
+<style id="sx-ai-image-css">
+#sxAIImageBtn{position:fixed;right:18px;bottom:88px;z-index:9998;border:1px solid rgba(180,255,0,.55);background:linear-gradient(135deg,#101b00,#263d00);color:#d8ff42;border-radius:50%;width:54px;height:54px;font-size:22px;box-shadow:0 0 22px rgba(180,255,0,.22);cursor:pointer}
+#sxAIImageOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);z-index:99999;padding:18px;overflow:auto}
+#sxAIImageModal{max-width:920px;margin:25px auto;background:linear-gradient(145deg,#0d1208,#111817);border:1px solid rgba(200,255,50,.35);border-radius:22px;color:#f3f7e8;box-shadow:0 25px 80px rgba(0,0,0,.65);overflow:hidden}
+.sx-ai-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sx-ai-title{font-size:20px;font-weight:800;color:#dfff4d}.sx-ai-sub{font-size:11px;opacity:.65;margin-top:3px}
+.sx-ai-close{background:none;border:0;color:#fff;font-size:25px;cursor:pointer}.sx-ai-body{padding:18px}.sx-ai-row{display:flex;gap:10px;flex-wrap:wrap}.sx-ai-field{flex:1;min-width:180px}
+.sx-ai-label{font-size:12px;opacity:.75;margin:0 0 7px}.sx-ai-input,.sx-ai-select{width:100%;box-sizing:border-box;background:#090d08;color:#fff;border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:12px;outline:none}.sx-ai-input:focus,.sx-ai-select:focus{border-color:#c9ff3d}
+#sxAIPrompt{min-height:92px;resize:vertical}.sx-ai-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.sx-ai-btn{border:0;border-radius:11px;padding:11px 15px;font-weight:700;cursor:pointer}.sx-ai-generate{background:#d7ff35;color:#111}.sx-ai-secondary{background:#222b20;color:#eaffb0;border:1px solid rgba(220,255,80,.18)}
+#sxAIStatus{font-size:12px;min-height:20px;margin:12px 0;opacity:.8}.sx-ai-result{display:none;background:#070a07;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:10px;margin-top:12px}.sx-ai-result img{display:block;width:100%;max-height:650px;object-fit:contain;border-radius:12px;background:#000}.sx-ai-result-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+#sxAIHistory{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.sx-ai-history-card{background:#0a0e09;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:7px;cursor:pointer}.sx-ai-history-card img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px}.sx-ai-history-card div{font-size:10px;opacity:.7;padding:5px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:600px){#sxAIImageOverlay{padding:8px}#sxAIImageModal{margin:5px auto;border-radius:16px}.sx-ai-body{padding:12px}#sxAIImageBtn{right:12px;bottom:80px}}
+</style>
 </head>
 <body>
   <!-- ===== BACKGROUND MUSIC ===== -->
@@ -8465,6 +8479,93 @@ platformTabs.forEach(tab => {
 })();
 </script>
 
+
+
+<button id="sxAIImageBtn" title="AI Image Generator">🎨</button>
+<div id="sxAIImageOverlay" aria-hidden="true">
+  <div id="sxAIImageModal">
+    <div class="sx-ai-head"><div><div class="sx-ai-title">🎨 AI IMAGE GENERATOR</div><div class="sx-ai-sub">XONETZY • Generate artwork langsung dari website</div></div><button class="sx-ai-close" id="sxAIClose">×</button></div>
+    <div class="sx-ai-body">
+      <div class="sx-ai-field"><div class="sx-ai-label">PROMPT</div><textarea id="sxAIPrompt" class="sx-ai-input" placeholder="Contoh: karakter XONETZY berdiri di kota cyberpunk malam hari, neon hijau-kuning, cinematic, ultra detailed"></textarea></div>
+      <div class="sx-ai-row" style="margin-top:10px">
+        <div class="sx-ai-field"><div class="sx-ai-label">STYLE</div><select id="sxAIStyle" class="sx-ai-select"><option value="realistic">Realistic</option><option value="anime">Anime</option><option value="cyberpunk">Cyberpunk</option><option value="xonetzy">XONETZY Style</option></select></div>
+        <div class="sx-ai-field"><div class="sx-ai-label">MODEL</div><select id="sxAIModel" class="sx-ai-select"><option value="flux">Flux</option><option value="black-forest-labs/flux.1-schnell">Flux Schnell</option><option value="google/gemini-2.5-flash-image">Gemini Image</option></select></div>
+        <div class="sx-ai-field"><div class="sx-ai-label">ASPECT RATIO</div><select id="sxAIRatio" class="sx-ai-select"><option value="1:1">1:1 Square</option><option value="16:9">16:9 Landscape</option><option value="9:16">9:16 Portrait</option><option value="4:3">4:3</option></select></div>
+      </div>
+      <div class="sx-ai-actions"><button class="sx-ai-btn sx-ai-generate" id="sxAIGenerate">⚡ GENERATE</button><button class="sx-ai-btn sx-ai-secondary" id="sxAIRandom">🎲 Random Prompt</button><button class="sx-ai-btn sx-ai-secondary" id="sxAIClearHistory">🗑️ Clear History</button></div>
+      <div id="sxAIStatus"></div>
+      <div id="sxAIResult" class="sx-ai-result"><img id="sxAIResultImg" alt="AI generated image"><div class="sx-ai-result-actions"><a id="sxAIDownload" class="sx-ai-btn sx-ai-generate" href="#" target="_blank" rel="noopener">⬇️ Download HD</a><button id="sxAIRegenerate" class="sx-ai-btn sx-ai-secondary">🔄 Regenerate</button></div></div>
+      <div style="margin-top:18px;font-weight:800;color:#dfff4d">🕘 History Generate</div><div id="sxAIHistory"></div>
+    </div>
+  </div>
+</div>
+
+<script id="sx-ai-image-js">
+(()=>{
+ const $=id=>document.getElementById(id), overlay=$('sxAIImageOverlay'), prompt=$('sxAIPrompt'), style=$('sxAIStyle'), model=$('sxAIModel'), ratio=$('sxAIRatio'), status=$('sxAIStatus'), result=$('sxAIResult'), img=$('sxAIResultImg'), dl=$('sxAIDownload'), historyEl=$('sxAIHistory');
+ const KEY='sx_ai_image_history_v1'; let lastUrl='';
+ const styles={realistic:'photorealistic, realistic lighting, natural skin, highly detailed, cinematic photography',anime:'anime illustration, expressive eyes, clean line art, vibrant detailed artwork',cyberpunk:'cyberpunk, futuristic city, neon lights, dark atmosphere, cinematic, ultra detailed',xonetzy:'XONETZY signature style, neon green and yellow, glitch accents, dark futuristic cyber aesthetic, cinematic, ultra detailed'};
+ const samples=['XONETZY warrior standing in a futuristic neon city, dramatic lighting, cinematic poster','XONETZY cyber hacker character with green-yellow neon energy, dark room, ultra detailed','A futuristic XONETZY logo monument floating above a cyberpunk city, cinematic night','XONETZY character wearing a black tech jacket, rain, neon reflections, epic portrait'];
+ function open(){overlay.style.display='block';overlay.setAttribute('aria-hidden','false');renderHistory()}
+ function close(){overlay.style.display='none';overlay.setAttribute('aria-hidden','true')}
+ function setStatus(t){status.textContent=t}
+ function dims(r){return r==='16:9'?[1536,864]:r==='9:16'?[864,1536]:r==='4:3'?[1344,1008]:[1024,1024]}
+ function makeUrl(){let p=prompt.value.trim();if(!p)throw Error('Prompt masih kosong.');p=p+', '+styles[style.value];let [w,h]=dims(ratio.value);let u='https://gen.pollinations.ai/image/'+encodeURIComponent(p)+'?model='+encodeURIComponent(model.value)+'&width='+w+'&height='+h+'&nologo=true&safe=true';return u}
+ function save(u,p){let a=[];try{a=JSON.parse(localStorage.getItem(KEY)||'[]')}catch{};a.unshift({url:u,prompt:p.slice(0,300),time:Date.now()});a=a.slice(0,12);localStorage.setItem(KEY,JSON.stringify(a));renderHistory()}
+ function renderHistory(){let a=[];try{a=JSON.parse(localStorage.getItem(KEY)||'[]')}catch{};historyEl.innerHTML=a.length?a.map((x,i)=>'<div class="sx-ai-history-card" data-i="'+i+'"><img src="'+x.url+'" loading="lazy"><div>'+esc(x.prompt)+'</div></div>').join(''):'<div style="opacity:.55;font-size:12px">Belum ada gambar.</div>';historyEl.querySelectorAll('.sx-ai-history-card').forEach(c=>c.onclick=()=>{let a=JSON.parse(localStorage.getItem(KEY)||'[]');let x=a[+c.dataset.i];if(x){lastUrl=x.url;img.src=x.url;dl.href=x.url;result.style.display='block';prompt.value=x.prompt;setStatus('Riwayat gambar dibuka.')}})}
+ function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+ async function generate(){try{let u=makeUrl(), p=prompt.value.trim();lastUrl=u;result.style.display='block';img.src='';setStatus('⏳ Membuat gambar AI... tunggu beberapa detik.');dl.href=u;img.onload=()=>setStatus('✅ Gambar berhasil dibuat.');img.onerror=()=>setStatus('❌ Gagal memuat gambar. Coba generate lagi atau pilih model lain.');img.src=u;save(u,p)}catch(e){setStatus('⚠️ '+e.message)}}
+ $('sxAIImageBtn').onclick=open;$('sxAIClose').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});$('sxAIGenerate').onclick=generate;$('sxAIRegenerate').onclick=generate;$('sxAIRandom').onclick=()=>{prompt.value=samples[Math.floor(Math.random()*samples.length)];style.value=['realistic','anime','cyberpunk','xonetzy'][Math.floor(Math.random()*4)]};$('sxAIClearHistory').onclick=()=>{localStorage.removeItem(KEY);renderHistory();setStatus('Riwayat dihapus.')};
+ prompt.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')generate()});
+ window.SXAIImage={open,close,generate,setPrompt:v=>prompt.value=v,history:renderHistory};
+})();
+</script>
+
+<style id="sx-ai-video-css">
+#sxAIVideoBtn{position:fixed;right:18px;bottom:88px;z-index:9998;border:0;border-radius:50%;width:56px;height:56px;font-size:25px;cursor:pointer;background:linear-gradient(135deg,#dfff4d,#8cff00);box-shadow:0 8px 28px rgba(0,0,0,.4);font-weight:900}
+.sx-v-secure{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:12px 14px;border:1px solid rgba(223,255,77,.22);border-radius:13px;background:rgba(223,255,77,.06);font-size:12px;line-height:1.5}.sx-v-secure>span{font-size:20px}.sx-v-secure b{color:#dfff4d;display:block;margin-bottom:2px}
+#sxAIVideoOverlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);overflow:auto;padding:18px}
+#sxAIVideoModal{max-width:760px;margin:5vh auto;background:#10150d;color:#fff;border:1px solid rgba(223,255,77,.35);border-radius:22px;box-shadow:0 25px 80px rgba(0,0,0,.65);overflow:hidden}
+.sx-v-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:linear-gradient(135deg,rgba(223,255,77,.16),rgba(0,0,0,.08));border-bottom:1px solid rgba(255,255,255,.08)}
+.sx-v-title{font-weight:900;font-size:18px}.sx-v-sub{opacity:.65;font-size:12px;margin-top:3px}.sx-v-close{background:none;border:0;color:#fff;font-size:30px;cursor:pointer}.sx-v-body{padding:20px}.sx-v-label{font-size:11px;font-weight:900;letter-spacing:.08em;color:#dfff4d;margin-bottom:7px}.sx-v-input,.sx-v-select{width:100%;box-sizing:border-box;background:#080b07;color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;font:inherit}.sx-v-input{min-height:110px;resize:vertical}.sx-v-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}.sx-v-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.sx-v-btn{border:0;border-radius:11px;padding:11px 14px;font-weight:900;cursor:pointer}.sx-v-primary{background:#dfff4d;color:#10150d}.sx-v-secondary{background:#20291a;color:#dfff4d;border:1px solid rgba(223,255,77,.22)}.sx-v-key{margin-top:12px}.sx-v-note{font-size:11px;opacity:.6;margin-top:6px;line-height:1.5}.sx-v-status{margin-top:12px;min-height:20px;font-size:13px}.sx-v-result{display:none;margin-top:15px;border-radius:15px;overflow:hidden;background:#080b07;border:1px solid rgba(255,255,255,.1)}.sx-v-result video{display:block;width:100%;max-height:480px;background:#000}.sx-v-result-actions{display:flex;gap:8px;padding:10px}.sx-v-history{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}.sx-v-history-card{background:#080b07;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;cursor:pointer}.sx-v-history-card video{width:100%;aspect-ratio:16/9;object-fit:cover;background:#000}.sx-v-history-card div{font-size:11px;padding:8px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}@media(max-width:650px){.sx-v-row{grid-template-columns:1fr 1fr}.sx-v-history{grid-template-columns:1fr 1fr}#sxAIVideoBtn{bottom:78px;right:14px}}
+</style>
+<button id="sxAIVideoBtn" title="AI Video Generator">🎬</button>
+<div id="sxAIVideoOverlay" aria-hidden="true">
+ <div id="sxAIVideoModal">
+  <div class="sx-v-head"><div><div class="sx-v-title">🎬 AI VIDEO GENERATOR</div><div class="sx-v-sub">XONETZY • Prompt → Video MP4</div></div><button class="sx-v-close" id="sxAIVideoClose">×</button></div>
+  <div class="sx-v-body">
+   <div class="sx-v-label">PROMPT VIDEO</div>
+   <textarea id="sxAIVideoPrompt" class="sx-v-input" placeholder="Contoh: XONETZY berjalan di kota cyberpunk malam hari, kamera bergerak mendekat, neon hijau-kuning, cinematic, realistic motion"></textarea>
+   <div class="sx-v-row">
+    <div><div class="sx-v-label">STYLE</div><select id="sxAIVideoStyle" class="sx-v-select"><option value="cinematic realistic">Cinematic Realistic</option><option value="anime cinematic">Anime Cinematic</option><option value="cyberpunk neon">Cyberpunk Neon</option><option value="XONETZY signature neon green yellow glitch">XONETZY Style</option></select></div>
+    <div><div class="sx-v-label">MODEL</div><select id="sxAIVideoModel" class="sx-v-select"><option value="google/veo-3.1-fast">Veo 3.1 Fast</option><option value="bytedance/seedance-2.0-fast">Seedance 2.0 Fast</option><option value="alibaba/wan-2.2-fast">Wan 2.2 Fast</option><option value="x-ai/grok-imagine-video">Grok Imagine Video</option></select></div>
+    <div><div class="sx-v-label">DURATION</div><select id="sxAIVideoDuration" class="sx-v-select"><option value="4">4 detik</option><option value="5">5 detik</option><option value="6">6 detik</option><option value="8">8 detik</option></select></div>
+   </div>
+   <div class="sx-v-secure"><span>🔐</span><div><b>Secure AI Video</b><div>API key dikelola oleh server XONETZY. Pengguna tidak perlu memasukkan atau melihat API key.</div></div></div>
+   <div class="sx-v-actions"><button class="sx-v-btn sx-v-primary" id="sxAIVideoGenerate">⚡ GENERATE VIDEO</button><button class="sx-v-btn sx-v-secondary" id="sxAIVideoRandom">🎲 Random Prompt</button><button class="sx-v-btn sx-v-secondary" id="sxAIVideoClear">🗑️ Clear History</button></div>
+   <div id="sxAIVideoStatus" class="sx-v-status"></div>
+   <div id="sxAIVideoResult" class="sx-v-result"><video id="sxAIVideoPlayer" controls playsinline></video><div class="sx-v-result-actions"><a id="sxAIVideoDownload" class="sx-v-btn sx-v-primary" href="#" target="_blank" rel="noopener" download>⬇️ Download MP4</a><button id="sxAIVideoAgain" class="sx-v-btn sx-v-secondary">🔄 Generate Lagi</button></div></div>
+   <div style="margin-top:18px;font-weight:800;color:#dfff4d">🕘 History Video</div><div id="sxAIVideoHistory" class="sx-v-history"></div>
+  </div>
+ </div>
+</div>
+<script id="sx-ai-video-js">
+(()=>{
+ const $=id=>document.getElementById(id), overlay=$('sxAIVideoOverlay'), prompt=$('sxAIVideoPrompt'), style=$('sxAIVideoStyle'), model=$('sxAIVideoModel'), duration=$('sxAIVideoDuration'), status=$('sxAIVideoStatus'), result=$('sxAIVideoResult'), player=$('sxAIVideoPlayer'), dl=$('sxAIVideoDownload'), history=$('sxAIVideoHistory');
+ const HK='sx_ai_video_history_v2'; let lastUrl='';
+ const samples=['XONETZY berjalan perlahan di jalan kota cyberpunk saat hujan, kamera dolly-in, neon hijau dan kuning, cinematic','XONETZY berdiri di atas gedung tinggi, angin meniup jaket, kamera orbit 360 derajat, futuristic cinematic','Karakter XONETZY menyalakan energi neon hijau-kuning lalu berlari menembus kota futuristik, dynamic camera, realistic motion','Logo XONETZY muncul dari asap gelap dengan glitch neon hijau-kuning, kamera zoom cepat, epic trailer'];
+ function open(){overlay.style.display='block';overlay.setAttribute('aria-hidden','false');renderHistory()}
+ function close(){overlay.style.display='none';overlay.setAttribute('aria-hidden','true');try{if(player.src)player.pause()}catch{}}
+ function setStatus(t){status.textContent=t}
+ function save(u,p){let a=[];try{a=JSON.parse(localStorage.getItem(HK)||'[]')}catch{};a.unshift({url:u,prompt:p.slice(0,300),time:Date.now()});a=a.slice(0,9);localStorage.setItem(HK,JSON.stringify(a));renderHistory()}
+ function renderHistory(){let a=[];try{a=JSON.parse(localStorage.getItem(HK)||'[]')}catch{};history.innerHTML=a.length?a.map((x,i)=>'<div class="sx-v-history-card" data-i="'+i+'"><video src="'+x.url+'" muted preload="metadata"></video><div>'+esc(x.prompt)+'</div></div>').join(''):'<div style="opacity:.55;font-size:12px">Belum ada video.</div>';history.querySelectorAll('.sx-v-history-card').forEach(c=>c.onclick=()=>{let a=JSON.parse(localStorage.getItem(HK)||'[]'),x=a[+c.dataset.i];if(x){lastUrl=x.url;player.src=x.url;dl.href=x.url;result.style.display='block';prompt.value=x.prompt;setStatus('Riwayat video dibuka.')}})}
+ function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+ function makeRequest(){let p=prompt.value.trim();if(!p)throw Error('Prompt video masih kosong.');return {prompt:p+', '+style.value,model:model.value,duration:Number(duration.value)}}
+ async function generate(){try{let req=makeRequest(),p=prompt.value.trim();result.style.display='block';player.removeAttribute('src');player.load();dl.removeAttribute('href');setStatus('⏳ Membuat video AI lewat server... proses dapat memerlukan beberapa saat.');const res=await fetch('/api/video',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(req)});if(!res.ok){let msg='Server gagal membuat video.';try{const j=await res.json();if(j&&j.error)msg=j.error}catch{};throw Error(msg)}const blob=await res.blob();const u=URL.createObjectURL(blob);lastUrl=u;player.src=u;player.load();dl.href=u;dl.download='xonetzy-ai-video.mp4';player.onloadeddata=()=>{setStatus('✅ Video berhasil dibuat.');try{player.play().catch(()=>{})}catch{}};player.onerror=()=>setStatus('❌ Video gagal diputar. Coba generate lagi.');save(u,p)}catch(e){setStatus('⚠️ '+e.message)}}
+ $('sxAIVideoBtn').onclick=open;$('sxAIVideoClose').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});$('sxAIVideoGenerate').onclick=generate;$('sxAIVideoAgain').onclick=generate;$('sxAIVideoRandom').onclick=()=>{prompt.value=samples[Math.floor(Math.random()*samples.length)];style.selectedIndex=Math.floor(Math.random()*style.options.length)};$('sxAIVideoClear').onclick=()=>{localStorage.removeItem(HK);renderHistory();setStatus('Riwayat video dihapus.')};prompt.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')generate()});
+ window.SXAIVideo={open,close,generate,setPrompt:v=>prompt.value=v,history:renderHistory};
+})();
+</script>
 
 </body>
 </html>
