@@ -8524,10 +8524,35 @@ platformTabs.forEach(tab => {
       <div class="sx-ai-actions"><button class="sx-ai-btn sx-ai-generate" id="sxAIGenerate">⚡ GENERATE</button><button class="sx-ai-btn sx-ai-secondary" id="sxAIRandom">🎲 Random Prompt</button><button class="sx-ai-btn sx-ai-secondary" id="sxAIClearHistory">🗑️ Clear History</button></div>
       <div id="sxAIStatus"></div>
       <div id="sxAIResult" class="sx-ai-result"><img id="sxAIResultImg" alt="AI generated image"><div class="sx-ai-result-actions"><a id="sxAIDownload" class="sx-ai-btn sx-ai-generate" href="#" target="_blank" rel="noopener">⬇️ Download HD</a><button id="sxAIRegenerate" class="sx-ai-btn sx-ai-secondary">🔄 Regenerate</button></div></div>
+
+      <div class="sx-free-tools" id="sxFreeImageTools">
+        <div class="sx-free-tools-title">🆓 GENERATOR GRATIS ALTERNATIF</div>
+        <div class="sx-free-tools-sub">Jika generator server XONETZY terkena batas Pollen/kuota, gunakan generator gratis berikut tanpa menghapus fitur AI Image utama.</div>
+        <div class="sx-free-tools-grid">
+          <button type="button" class="sx-free-provider" id="sxFreeImgGenBtn"><b>🖼️ FreeImgGen</b><span>Generator gratis tanpa akun • no watermark • Z-Image Turbo</span></button>
+          <button type="button" class="sx-free-provider" id="sxNeonSnapBtn"><b>✨ NeonSnap</b><span>Generator/edit foto • Nano Banana • tersedia lewat browser</span></button>
+        </div>
+        <button type="button" class="sx-free-copy" id="sxFreeCopyPrompt">📋 Salin Prompt ke Clipboard</button>
+        <div class="sx-free-tools-note">Tombol membuka situs resmi provider di tab baru. Prompt disalin agar bisa langsung ditempel di kolom mereka; integrasi API langsung tidak dipaksakan karena kedua situs tidak menyediakan API publik yang diperlukan untuk pemanggilan server dari Vercel.</div>
+      </div>
+
       <div style="margin-top:18px;font-weight:800;color:#dfff4d">🕘 History Generate</div><div id="sxAIHistory"></div>
     </div>
   </div>
 </div>
+
+
+<script id="sx-free-image-tools-js">
+(()=>{
+ const promptEl=document.getElementById('sxAIPrompt');
+ const copyPrompt=async()=>{const p=(promptEl?.value||'').trim();if(!p){alert('Prompt masih kosong. Isi prompt terlebih dahulu.');return}try{await navigator.clipboard.writeText(p);alert('✅ Prompt berhasil disalin. Tempelkan di generator yang dibuka.')}catch{const t=document.createElement('textarea');t.value=p;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();alert('✅ Prompt berhasil disalin.')}};
+ const openProvider=(url)=>{const p=(promptEl?.value||'').trim();try{localStorage.setItem('sx_external_image_prompt',p)}catch{};window.open(url,'_blank','noopener,noreferrer');};
+ document.getElementById('sxFreeCopyPrompt')?.addEventListener('click',copyPrompt);
+ document.getElementById('sxFreeImgGenBtn')?.addEventListener('click',()=>openProvider('https://freeimggen.com/'));
+ document.getElementById('sxNeonSnapBtn')?.addEventListener('click',()=>openProvider('https://neonsnap.com/create-image'));
+ window.SXFreeImageTools={copyPrompt,openFreeImgGen:()=>openProvider('https://freeimggen.com/'),openNeonSnap:()=>openProvider('https://neonsnap.com/create-image')};
+})();
+</script>
 
 <script id="sx-ai-image-js">
 (()=>{
@@ -8552,6 +8577,11 @@ platformTabs.forEach(tab => {
  $('sxAIImageBtn').onclick=open;$('sxAIClose').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});mode.onchange=updateMode;file.onchange=onFile;$('sxAIRemove').onclick=()=>{file.value='';imageData='';imageName='';preview.style.display='none';setStatus('Foto referensi dihapus.')};document.querySelectorAll('#sxAIQuick .sx-ai-chip').forEach(b=>b.onclick=()=>addQuick(b.dataset.add));$('sxAIGenerate').onclick=generate;$('sxAIRegenerate').onclick=generate;$('sxAIRandom').onclick=()=>{prompt.value=samples[Math.floor(Math.random()*samples.length)];style.value=['realistic','anime','cyberpunk','xonetzy'][Math.floor(Math.random()*4)];mode.value='generate';updateMode()};$('sxAIClearHistory').onclick=()=>{localStorage.removeItem(KEY);renderHistory();setStatus('Riwayat dihapus.')};prompt.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')generate()});window.SXAIImage={open,close,generate,setPrompt:v=>prompt.value=v,history:renderHistory,setMode:v=>{mode.value=v;updateMode()}};
 })();
 </script>
+
+
+<style id="sx-free-image-tools-css">
+.sx-free-tools{margin-top:16px;padding:14px;border:1px solid rgba(200,255,50,.18);border-radius:16px;background:linear-gradient(135deg,rgba(180,255,0,.055),rgba(0,200,120,.035))}.sx-free-tools-title{font-weight:900;color:#dfff4d;font-size:13px}.sx-free-tools-sub{font-size:11px;opacity:.65;margin-top:4px;line-height:1.45}.sx-free-tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}.sx-free-provider{border:1px solid rgba(255,255,255,.1);background:#0b100a;color:#fff;border-radius:13px;padding:11px;cursor:pointer;text-align:left}.sx-free-provider:hover{border-color:rgba(223,255,77,.45);transform:translateY(-1px)}.sx-free-provider b{display:block;color:#dfff4d;font-size:12px}.sx-free-provider span{display:block;font-size:10px;opacity:.65;margin-top:4px;line-height:1.4}.sx-free-copy{margin-top:9px;width:100%;border:1px solid rgba(223,255,77,.2);background:#151d11;color:#dfff4d;border-radius:10px;padding:9px;cursor:pointer;font-weight:800}.sx-free-tools-note{font-size:10px;opacity:.5;margin-top:8px;line-height:1.45}@media(max-width:600px){.sx-free-tools-grid{grid-template-columns:1fr}}
+</style>
 
 <style id="sx-ai-video-css">
 #sxAIVideoBtn{position:fixed;right:18px;bottom:88px;z-index:9998;border:0;border-radius:50%;width:56px;height:56px;font-size:25px;cursor:pointer;background:linear-gradient(135deg,#dfff4d,#8cff00);box-shadow:0 8px 28px rgba(0,0,0,.4);font-weight:900}
