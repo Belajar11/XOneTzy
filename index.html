@@ -2847,6 +2847,22 @@
 #sxAIFile{display:none}.sx-ai-preview{display:none;margin-top:10px;position:relative}.sx-ai-preview img{display:block;width:100%;max-height:280px;object-fit:contain;border-radius:10px;background:#000}.sx-ai-remove{position:absolute;right:8px;top:8px;border:0;border-radius:9px;background:rgba(0,0,0,.75);color:#fff;padding:7px 9px;cursor:pointer}.sx-ai-edit-note{font-size:11px;opacity:.7;line-height:1.5;margin-top:8px}.sx-ai-mode{margin-top:10px}.sx-ai-mode select{font-weight:700}.sx-ai-quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.sx-ai-chip{border:1px solid rgba(223,255,77,.18);background:#141b12;color:#dfff4d;border-radius:999px;padding:7px 10px;font-size:11px;cursor:pointer}
 @media(max-width:600px){#sxAIImageOverlay{padding:8px}#sxAIImageModal{margin:5px auto;border-radius:16px}.sx-ai-body{padding:12px}#sxAIImageBtn{right:12px;bottom:145px}}
 </style>
+
+<style id="sx-wall-css">
+#sxWallBtn{position:fixed;right:18px;bottom:210px;z-index:9998;width:54px;height:54px;border-radius:50%;border:1px solid rgba(0,255,170,.55);background:linear-gradient(135deg,#071b16,#10382b);color:#65ffd2;font-size:22px;box-shadow:0 0 24px rgba(0,255,170,.22);cursor:pointer}
+#sxWallBtn:hover{transform:scale(1.05)}
+#sxWallOverlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);padding:10px;overflow:auto}
+#sxWallModal{width:min(760px,100%);margin:20px auto;background:#08100e;color:#ecfff8;border:1px solid rgba(0,255,170,.28);border-radius:20px;box-shadow:0 20px 70px rgba(0,0,0,.55);overflow:hidden}
+.sx-wall-head{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(90deg,rgba(0,255,170,.08),rgba(180,255,0,.04))}
+.sx-wall-title{font-weight:900;font-size:18px}.sx-wall-sub{font-size:11px;color:#8fb7aa;margin-top:3px}
+.sx-wall-close{background:#111c19;border:1px solid #29483f;color:#fff;border-radius:10px;padding:8px 11px;cursor:pointer}
+.sx-wall-body{padding:14px}.sx-wall-card{background:#0c1714;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px;margin-bottom:12px}
+.sx-wall-row{display:flex;gap:10px;align-items:center}.sx-wall-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#b8ff00,#00d9a0);color:#07100d;display:grid;place-items:center;font-weight:1000;flex:none}
+.sx-wall-name{font-weight:900}.sx-wall-time{font-size:11px;color:#76948b}.sx-wall-input,.sx-wall-textarea{width:100%;box-sizing:border-box;background:#07100e;color:#effff8;border:1px solid #23483d;border-radius:12px;padding:11px;margin-top:9px;outline:none}.sx-wall-textarea{min-height:90px;resize:vertical}
+.sx-wall-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.sx-wall-btn{border:1px solid #285447;background:#10231d;color:#cffff0;border-radius:10px;padding:9px 12px;cursor:pointer}.sx-wall-btn.primary{background:linear-gradient(135deg,#baff00,#00d99a);color:#06100c;border:0;font-weight:900}.sx-wall-btn.danger{color:#ff9c9c}.sx-wall-btn:disabled{opacity:.5;cursor:not-allowed}
+.sx-wall-photo{display:none;width:100%;max-height:340px;object-fit:cover;border-radius:13px;margin-top:10px}.sx-wall-post-text{white-space:pre-wrap;word-break:break-word;line-height:1.5;margin:12px 0}.sx-wall-link{display:block;color:#76ffd8;word-break:break-all;margin:7px 0}.sx-wall-meta{display:flex;justify-content:space-between;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;color:#91aaa2}.sx-wall-react{display:flex;gap:7px;margin-top:9px}.sx-wall-react button{flex:1}.sx-wall-comments{margin-top:10px;display:none}.sx-wall-comment{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px}.sx-wall-comment b{color:#caff70}.sx-wall-empty{text-align:center;color:#759087;padding:28px 8px}.sx-wall-preview{display:none;position:relative;margin-top:10px}.sx-wall-preview img{width:100%;max-height:220px;object-fit:cover;border-radius:12px}.sx-wall-preview button{position:absolute;right:8px;top:8px;border:0;border-radius:8px;padding:6px;background:rgba(0,0,0,.65);color:#fff}.sx-wall-status{font-size:12px;color:#8fb7aa;margin-top:8px;min-height:16px}
+@media(max-width:600px){#sxWallBtn{right:12px;bottom:205px}#sxWallOverlay{padding:6px}#sxWallModal{margin:5px auto;border-radius:16px}}
+</style>
 </head>
 <body>
   <!-- ===== BACKGROUND MUSIC ===== -->
@@ -8581,6 +8597,101 @@ platformTabs.forEach(tab => {
  async function generate(){try{let req=makeRequest(),p=prompt.value.trim();result.style.display='block';player.removeAttribute('src');player.load();dl.removeAttribute('href');setStatus('⏳ Membuat video AI lewat server... proses dapat memerlukan beberapa saat.');const res=await fetch('/api/video',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(req)});if(!res.ok){let msg='Server gagal membuat video.';try{const j=await res.json();if(j&&j.error)msg=j.error}catch{};if(res.status===402)msg='💳 Pollinations mengembalikan 402: saldo/Pollen API key tidak cukup untuk generate video. Isi saldo/kuota akun Pollinations, lalu coba lagi.';else if(res.status===401||res.status===403)msg='🔐 API key server ditolak. Periksa POLLINATIONS_API_KEY di Vercel Environment Variables lalu Redeploy.';throw Error(msg)}const blob=await res.blob();const u=URL.createObjectURL(blob);lastUrl=u;player.src=u;player.load();dl.href=u;dl.download='xonetzy-ai-video.mp4';player.onloadeddata=()=>{setStatus('✅ Video berhasil dibuat.');try{player.play().catch(()=>{})}catch{}};player.onerror=()=>setStatus('❌ Video gagal diputar. Coba generate lagi.');save(u,p)}catch(e){setStatus('⚠️ '+e.message)}}
  $('sxAIVideoBtn').onclick=open;$('sxAIVideoClose').onclick=close;overlay.addEventListener('click',e=>{if(e.target===overlay)close()});$('sxAIVideoGenerate').onclick=generate;$('sxAIVideoAgain').onclick=generate;$('sxAIVideoRandom').onclick=()=>{prompt.value=samples[Math.floor(Math.random()*samples.length)];style.selectedIndex=Math.floor(Math.random()*style.options.length)};$('sxAIVideoClear').onclick=()=>{localStorage.removeItem(HK);renderHistory();setStatus('Riwayat video dihapus.')};prompt.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')generate()});
  window.SXAIVideo={open,close,generate,setPrompt:v=>prompt.value=v,history:renderHistory};
+})();
+</script>
+
+
+<button id="sxWallBtn" title="Wall / Feed Status">📰</button>
+<div id="sxWallOverlay">
+  <div id="sxWallModal">
+    <div class="sx-wall-head">
+      <div><div class="sx-wall-title">📰 Wall / Feed Status</div><div class="sx-wall-sub">Posting status, foto, link • Like • Komentar</div></div>
+      <button class="sx-wall-close" id="sxWallClose">✕</button>
+    </div>
+    <div class="sx-wall-body">
+      <div class="sx-wall-card">
+        <div class="sx-wall-row"><div class="sx-wall-avatar" id="sxWallAvatar">X</div><div><div class="sx-wall-name" id="sxWallUserLabel">Tuan</div><div class="sx-wall-time">Buat postingan baru</div></div></div>
+        <input class="sx-wall-input" id="sxWallName" maxlength="40" placeholder="Nama kamu">
+        <textarea class="sx-wall-textarea" id="sxWallText" maxlength="1000" placeholder="Apa yang sedang kamu pikirkan?"></textarea>
+        <input class="sx-wall-input" id="sxWallLink" maxlength="500" placeholder="🔗 Link (opsional), contoh https://...">
+        <input id="sxWallFile" type="file" accept="image/png,image/jpeg,image/webp" style="display:none">
+        <div class="sx-wall-preview" id="sxWallPreview"><img id="sxWallPreviewImg"><button id="sxWallRemovePhoto">✕</button></div>
+        <div class="sx-wall-actions">
+          <button class="sx-wall-btn" id="sxWallPhotoBtn">🖼️ Foto</button>
+          <button class="sx-wall-btn primary" id="sxWallPostBtn">🚀 Posting</button>
+          <button class="sx-wall-btn" id="sxWallRefreshBtn">🔄 Refresh</button>
+        </div>
+        <div class="sx-wall-status" id="sxWallStatus"></div>
+      </div>
+      <div id="sxWallFeed"></div>
+    </div>
+  </div>
+</div>
+<script id="sx-wall-js">
+(()=>{
+ const SUPABASE_URL='https://czearfmiqddnqtailckb.supabase.co';
+ const SUPABASE_KEY='sb_publishable_cB9eiLcaI4vtGK6E7NaxRQ_w3lIRTbb';
+ const db=(window.supabase&&supabase.createClient)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+ const overlay=$('sxWallOverlay'),feed=$('sxWallFeed'),name=$('sxWallName'),text=$('sxWallText'),link=$('sxWallLink'),file=$('sxWallFile'),preview=$('sxWallPreview'),previewImg=$('sxWallPreviewImg'),status=$('sxWallStatus');
+ let photoData=''; let currentUser=null;
+ const NAMEKEY='sx_wall_user_name_v2';
+ const IDKEY='sx_wall_anon_id_v2';
+ function setStatus(v){status.textContent=v||''}
+ function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+ function ago(t){const s=Math.max(1,Math.floor((Date.now()-new Date(t).getTime())/1000));if(s<60)return s+' detik';const m=Math.floor(s/60);if(m<60)return m+' menit';const h=Math.floor(m/60);if(h<24)return h+' jam';const d=Math.floor(h/24);return d+' hari'}
+ function getName(){return localStorage.getItem(NAMEKEY)||'Tuan'}
+ function setName(v){v=(v||'Tuan').trim().slice(0,40)||'Tuan';localStorage.setItem(NAMEKEY,v);name.value=v;$('sxWallUserLabel').textContent=v;$('sxWallAvatar').textContent=v[0].toUpperCase()}
+ function getLocalId(){let id=localStorage.getItem(IDKEY);if(!id){id=crypto.randomUUID?crypto.randomUUID():'dev_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem(IDKEY,id)}return id}
+ async function ensureUser(){
+   if(!db) throw Error('Supabase library tidak tersedia.');
+   if(currentUser) return currentUser;
+   const {data,error}=await db.auth.getSession();
+   if(error) throw error;
+   if(data.session){currentUser=data.session.user;return currentUser}
+   const r=await db.auth.signInAnonymously();
+   if(r.error) throw r.error;
+   currentUser=r.data.user; return currentUser;
+ }
+ function resetComposer(){text.value='';link.value='';file.value='';photoData='';preview.style.display='none'}
+ async function uploadPhoto(){
+   if(!photoData)return null;
+   const m=photoData.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/); if(!m) throw Error('Foto tidak valid.');
+   const mime=m[1], bin=atob(m[2]), bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+   const ext=mime==='image/png'?'png':mime==='image/webp'?'webp':'jpg';
+   const path=`${currentUser.id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+   const {error}=await db.storage.from('wall-photos').upload(path,bytes,{contentType:mime,upsert:false});
+   if(error)throw error;
+   return db.storage.from('wall-photos').getPublicUrl(path).data.publicUrl;
+ }
+ async function fetchPosts(){
+   const {data,error}=await db.from('wall_posts').select('id,user_id,name,text,link,photo_url,created_at').order('created_at',{ascending:false}).limit(100);
+   if(error)throw error;
+   return data||[];
+ }
+ async function fetchLikes(ids){if(!ids.length)return[];const {data,error}=await db.from('wall_likes').select('post_id,user_id').in('post_id',ids);if(error)throw error;return data||[]}
+ async function fetchComments(ids){if(!ids.length)return[];const {data,error}=await db.from('wall_comments').select('id,post_id,user_id,name,text,created_at').in('post_id',ids).order('created_at',{ascending:true});if(error)throw error;return data||[]}
+ async function render(){
+   if(!db){feed.innerHTML='<div class="sx-wall-empty">Supabase belum tersedia.</div>';return}
+   try{
+     await ensureUser();
+     const arr=await fetchPosts(); const ids=arr.map(p=>p.id); const likes=await fetchLikes(ids), comments=await fetchComments(ids);
+     const myId=currentUser.id;
+     if(!arr.length){feed.innerHTML='<div class="sx-wall-empty">Belum ada postingan.<br>Jadilah yang pertama posting 🔥</div>';return}
+     const lm={}; likes.forEach(x=>(lm[x.post_id]??=[]).push(x)); const cm={}; comments.forEach(x=>(cm[x.post_id]??=[]).push(x));
+     feed.innerHTML=arr.map(p=>{const ls=lm[p.id]||[], cs=cm[p.id]||[], liked=ls.some(x=>x.user_id===myId);const photo=p.photo_url?`<img class="sx-wall-photo" style="display:block" src="${esc(p.photo_url)}" alt="Foto postingan" loading="lazy">`:'';const url=p.link?`<a class="sx-wall-link" href="${esc(p.link)}" target="_blank" rel="noopener noreferrer">🔗 ${esc(p.link)}</a>`:'';return `<article class="sx-wall-card" data-id="${p.id}"><div class="sx-wall-row"><div class="sx-wall-avatar">${esc((p.name||'?')[0].toUpperCase())}</div><div><div class="sx-wall-name">${esc(p.name||'Tuan')}</div><div class="sx-wall-time">${ago(p.created_at)} yang lalu</div></div></div>${p.text?`<div class="sx-wall-post-text">${esc(p.text)}</div>`:''}${photo}${url}<div class="sx-wall-meta"><span>❤️ ${ls.length} like</span><span>💬 ${cs.length} komentar</span></div><div class="sx-wall-react"><button class="sx-wall-btn" data-act="like">${liked?'💚 Batal Like':'❤️ Like'}</button><button class="sx-wall-btn" data-act="comment">💬 Komentar</button>${p.user_id===myId?'<button class="sx-wall-btn danger" data-act="delete">🗑️ Hapus</button>':''}</div><div class="sx-wall-comments" style="display:${cs.length?'block':'none'}">${cs.map(c=>`<div class="sx-wall-comment"><b>${esc(c.name)}:</b> ${esc(c.text)}</div>`).join('')}<div class="sx-wall-row" style="margin-top:8px"><input class="sx-wall-input" data-comment-input placeholder="Tulis komentar..." maxlength="300"><button class="sx-wall-btn primary" data-act="sendcomment">Kirim</button></div></div></article>`}).join('');
+   }catch(e){feed.innerHTML=`<div class="sx-wall-empty">❌ ${esc(e.message||'Gagal memuat feed.')}<br><small>Pastikan Anonymous Auth + SQL Wall sudah diaktifkan di Supabase.</small></div>`}
+ }
+ $('sxWallBtn').onclick=async()=>{overlay.style.display='block';setName(getName());setStatus('⏳ Menghubungkan ke Wall online...');await render();setStatus('')};
+ $('sxWallClose').onclick=()=>overlay.style.display='none'; overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.style.display='none'});
+ $('sxWallRefreshBtn').onclick=async()=>{setStatus('⏳ Memuat feed...');await render();setStatus('Feed online diperbarui.');setTimeout(()=>setStatus(''),1600)};
+ name.addEventListener('input',()=>setName(name.value));
+ $('sxWallPhotoBtn').onclick=()=>file.click();
+ file.onchange=()=>{const f=file.files?.[0];if(!f)return;if(!/^image\/(png|jpeg|webp)$/.test(f.type)){setStatus('Format foto harus PNG, JPG/JPEG, atau WEBP.');file.value='';return}if(f.size>5*1024*1024){setStatus('Ukuran foto maksimal 5 MB.');file.value='';return}const r=new FileReader();r.onload=()=>{photoData=r.result;previewImg.src=photoData;preview.style.display='block'};r.readAsDataURL(f)};
+ $('sxWallRemovePhoto').onclick=()=>{photoData='';file.value='';preview.style.display='none'};
+ $('sxWallPostBtn').onclick=async()=>{try{const n=(name.value||'Tuan').trim();const t=text.value.trim();const l=link.value.trim();if(!t&&!photoData&&!l){setStatus('Isi status, foto, atau link terlebih dahulu.');return}if(l&&!/^https?:\/\//i.test(l)){setStatus('Link harus diawali http:// atau https://');return}setName(n);setStatus('⏳ Mengirim postingan ke server...');await ensureUser();const photo_url=await uploadPhoto();const {error}=await db.from('wall_posts').insert({user_id:currentUser.id,name:n,text:t,link:l,photo_url});if(error)throw error;resetComposer();await render();setStatus('🚀 Posting berhasil dibagikan ke semua pengguna.');}catch(e){setStatus('❌ '+(e.message||'Posting gagal.'))}};
+ feed.addEventListener('click',async e=>{const card=e.target.closest('[data-id]');if(!card)return;const id=card.dataset.id,act=e.target.closest('[data-act]')?.dataset.act;if(!act)return;try{await ensureUser();if(act==='like'){const {data:mine}=await db.from('wall_likes').select('post_id').eq('post_id',id).eq('user_id',currentUser.id).maybeSingle();if(mine){await db.from('wall_likes').delete().eq('post_id',id).eq('user_id',currentUser.id)}else{const {error}=await db.from('wall_likes').insert({post_id:id,user_id:currentUser.id});if(error)throw error}await render()}else if(act==='comment'){const box=card.querySelector('.sx-wall-comments');if(box)box.style.display=box.style.display==='none'?'block':'none'}else if(act==='sendcomment'){const inp=card.querySelector('[data-comment-input]'),v=inp?.value.trim();if(!v)return;const {error}=await db.from('wall_comments').insert({post_id:id,user_id:currentUser.id,name:getName(),text:v});if(error)throw error;await render()}else if(act==='delete'){const {data:p}=await db.from('wall_posts').select('user_id,photo_url').eq('id',id).maybeSingle();if(!p||p.user_id!==currentUser.id)return;if(confirm('Hapus postingan ini?')){const {error}=await db.from('wall_posts').delete().eq('id',id);if(error)throw error;await render()}}}catch(e){setStatus('❌ '+(e.message||'Aksi gagal.'))}});
+ setName(getName());
+ window.SXWall={open:()=>{$('sxWallOverlay').style.display='block';render()},close:()=>{$('sxWallOverlay').style.display='none'},refresh:render};
 })();
 </script>
 
