@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Social Downloader - XOneTzy_Projeck</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -8632,7 +8632,7 @@ platformTabs.forEach(tab => {
  const $=id=>document.getElementById(id);
  const SUPABASE_URL='https://czearfmiqddnqtailckb.supabase.co';
  const SUPABASE_KEY='sb_publishable_cB9eiLcaI4vtGK6E7NaxRQ_w3lIRTbb';
- const db=(window.supabase&&supabase.createClient)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+ const db=(window.supabase&&typeof window.supabase.createClient==='function')?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
  const overlay=$('sxWallOverlay'),feed=$('sxWallFeed'),name=$('sxWallName'),text=$('sxWallText'),link=$('sxWallLink'),file=$('sxWallFile'),preview=$('sxWallPreview'),previewImg=$('sxWallPreviewImg'),status=$('sxWallStatus');
  let photoData=''; let currentUser=null;
  const NAMEKEY='sx_wall_user_name_v2';
@@ -8649,6 +8649,7 @@ platformTabs.forEach(tab => {
    const {data,error}=await db.auth.getSession();
    if(error) throw error;
    if(data.session){currentUser=data.session.user;return currentUser}
+   if(!db.auth || typeof db.auth.signInAnonymously!=='function') throw Error('Supabase Auth SDK belum termuat dengan benar. Refresh halaman dan pastikan memakai file WALL FIX terbaru.');
    const r=await db.auth.signInAnonymously();
    if(r.error) throw r.error;
    currentUser=r.data.user; return currentUser;
